@@ -1,9 +1,26 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend, Title } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  Title,
+} from "chart.js";
 
 // Register necessary chart components
-ChartJS.register(CategoryScale, LinearScale, LineElement, PointElement, Tooltip, Legend, Title);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Tooltip,
+  Legend,
+  Title
+);
 
 interface LineChartProps {
   data: { day: string; value: number }[];
@@ -35,7 +52,11 @@ const LineChart: React.FC<LineChartProps> = ({ data, feature }) => {
     },
   };
 
-  return <Line data={chartData} options={options} />;
+  return <Line 
+    data={chartData} 
+    options={options}
+    className="col-span-2 lg:col-span-1" 
+    />;
 };
 
 export default LineChart;

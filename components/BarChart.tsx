@@ -73,7 +73,7 @@ const BarChart: React.FC<BarChartProps> = ({ data, onFeatureClick }) => {
     <Bar
       data={chartData}
       options={options}
-      className="max-w-[50vw] max-h-[60vh] bg-neutral-100 p-2"
+      className="col-span-2 lg:col-span-1"
     />
   );
 };
