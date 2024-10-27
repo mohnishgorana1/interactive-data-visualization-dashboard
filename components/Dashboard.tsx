@@ -5,10 +5,17 @@ import BarChart from "./BarChart";
 import Filters from "./Filters";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import LineChart from "./LineChart";
+import { parseDate } from "@/helpers/utils";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
+
+  const [trendData, setTrendData] = useState<
+    { date: string; timeSpent: number }[]
+  >([]);
+  const [lineChartData, setLineChartData] = useState([]);
 
   //   filters
   const [selectedAge, setSelectedAge] = useState("");
@@ -24,52 +31,23 @@ const Dashboard = () => {
   const handleFeatureClick = (feature: string) => {
     setSelectedFeature(feature); // Set the feature for the line chart
     console.log(`Selected feature for trend: ${feature}`);
-  };
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const sheetData = await fetchSheetData();
-        setData(sheetData); // Set the parsed data to state
-        setFilteredData(sheetData);
-        console.log("sheet data", sheetData);
-      } catch (err) {
-        setError(err?.message);
-      } finally {
-        setLoading(false); // Set loading to false when done
-      }
-    };
+    // // Prepare time trend data
+    // const dataForFeature = data
+    //   .filter((entry: any) => entry[feature]) // Ensure entry has the feature
+    //   .map((entry: any) => ({
+    //     date: entry.Day,
+    //     timeSpent: parseInt(entry[feature], 10),
+    //   }));
+    // setTrendData(dataForFeature);
 
-    loadData(); // Call the function to fetch data
-  }, []);
-
-  //   // Filter data whenever selectedAge or selectedGender changes
-  //   useEffect(() => {
-  //     let updatedData = data;
-  //     console.log("selected filters", selectedAge, selectedGender);
-
-  //     if (selectedAge) {
-  //       updatedData = updatedData.filter((item: any) => item.Age === selectedAge);
-  //     }
-  //     if (selectedGender) {
-  //       updatedData = updatedData.filter(
-  //         (item) => item.Gender === selectedGender
-  //       );
-  //     }
-
-  //     setFilteredData(updatedData);
-  //   }, [selectedAge, selectedGender, data]);
-
-  // Helper function to parse dates in DD/MM/YYYY format
-  const parseDate = (dateStr: string) => {
-    const [day, month, year] = dateStr.split("/").map(Number);
-    return new Date(year, month - 1, day); // month is zero-indexed in JavaScript Date
-  };
-  const formatDateToDDMMYYYY = (date: Date): string => {
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    // Filter `filteredData` for the selected feature and format it for the line chart
+    const featureData = filteredData.map((entry) => ({
+      day: entry.Day,
+      value: parseInt(entry[feature] || "0", 10),
+    }));
+    setLineChartData(featureData); // Update the line chart data
+    setSelectedFeature(feature); // Set the feature for the line chart
   };
 
   const applyFilters = () => {
@@ -100,6 +78,23 @@ const Dashboard = () => {
 
     setFilteredData(filtered);
   };
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const sheetData = await fetchSheetData();
+        setData(sheetData); // Set the parsed data to state
+        setFilteredData(sheetData);
+        console.log("sheet data", sheetData);
+      } catch (err) {
+        setError(err?.message);
+      } finally {
+        setLoading(false); // Set loading to false when done
+      }
+    };
+
+    loadData(); // Call the function to fetch data
+  }, []);
 
   // Call applyFilters whenever filter states change
   useEffect(() => {
@@ -157,8 +152,11 @@ const Dashboard = () => {
         <section className="">
           <BarChart data={filteredData} onFeatureClick={handleFeatureClick} />
 
+          {/* Line Chart for the selected feature */}
           {selectedFeature && (
-            <div>Display line chart for: {selectedFeature}</div>
+            <section>
+              <LineChart data={lineChartData} feature={selectedFeature} />
+            </section>
           )}
         </section>
       </section>
