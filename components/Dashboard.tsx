@@ -7,6 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import LineChart from "./LineChart";
 import { parseDate } from "@/helpers/utils";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
@@ -24,7 +25,7 @@ const Dashboard = () => {
   const [endDate, setEndDate] = useState<Date | null>(null);
 
   const [loading, setLoading] = useState(true);
-  const [isApplyingFilter, setIsApplyingFilter] = useState(false)
+  const [isApplyingFilter, setIsApplyingFilter] = useState(false);
   const [error, setError] = useState(null);
 
   const [selectedFeature, setSelectedFeature] = useState<string | null>(null);
@@ -97,9 +98,14 @@ const Dashboard = () => {
 
   return (
     <div className="w-full flex flex-col items-center justify-center pt-8 gap-y-5">
-      <h1 className="font-bold text-4xl sm:text-6xl text-center text-cyan-950 pb-1 border-b-[1px] hover:border-b-cyan-950 duration-300">
-        Data Visualization Dashboard
-      </h1>
+      <header className="w-full px-2 lg:px-8 flex items-center justify-between">
+        <h1 className="font-bold text-xl lg:text-3xl text-cyan-950 pb-1 border-b-[1px] hover:border-b-cyan-950 duration-300">
+          Data Visualization Dashboard
+        </h1>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </header>
 
       <section className="w-full p-2 lg:p-4 flex flex-col gap-y-2">
         {/* filters */}
